@@ -1,4 +1,3 @@
-ReplSpeChar
-===========
+# ReplSpeChar #
 
-Replace special characters from a text file
+Simple Python script to replace special characters from a text file.

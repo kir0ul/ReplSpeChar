@@ -13,7 +13,7 @@ pip install unidecode
 import sys
 from unidecode import unidecode
 
-def main(File):
+def ReplSpeChar(File):
     """
     Open the file passed in argument.
     Return in the standard output the text with the special characters
@@ -27,10 +27,11 @@ def main(File):
     # First decode the texte encoded in UTF-8.
     # Then apply the unidecode function that converts it to ASCII with good matches for special characters.
     TxtAsc = unidecode(TxtSpe.decode('utf_8'))
-    print(TxtAsc)
+    return TxtAsc
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
-        main(sys.argv[1]) # sys.argv[0]=Name of the script, sys.argv[1]= 1st argument
+        TxtAsc = ReplSpeChar(sys.argv[1]) # sys.argv[0]=Name of the script, sys.argv[1]= 1st argument
+        print(TxtAsc)
     else:
         print("No Argument. Please pass a filename.")

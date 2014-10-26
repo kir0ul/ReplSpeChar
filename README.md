@@ -7,3 +7,9 @@ To try it:
 ```
 python ReplSpeChar ExampleForTest.txt
 ```
+
+The codec used to encode your file can be optionally passed as one of the [standard codecs](https://docs.python.org/2/library/codecs.html#standard-encodings) with:
+```
+python ReplSpeChar FileToRemoveSpecialCharacters CodecUsed
+```
+Otherwise, _utf_8_ will be assumed.

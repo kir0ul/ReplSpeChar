@@ -12,26 +12,41 @@ pip install unidecode
 
 import sys
 
-def ReplSpeChar(File):
+def ReplSpeChar(File, enc='utf_8'):
     """
     Open the file passed in argument.
     Return in the standard output the text with the special characters
     replaced by ASCII ones.
+
+    The argument "enc" is the codec used to encode the file.
+    Default encoding is 'utf_8'.
+    Standard codecs can be found at the following address:
+    https://docs.python.org/2/library/codecs.html#standard-encodings
     """
-    from unidecode import unidecode
+    try:
+        from unidecode import unidecode
+    except ImportError:
+        print("Package unidecode not found.")
+        print("You can install it with:\npip install unidecode")
+        sys.exit()
+
     fobj = open(File, 'r')
     TxtSpe = fobj.read()
     fobj.close()
 
     # The unidecode package needs a unicode string.
-    # First decode the texte encoded in UTF-8.
+    # First decode the texte encoded with the "enc" codec.
     # Then apply the unidecode function that converts it to ASCII with good matches for special characters.
-    TxtAsc = unidecode(TxtSpe.decode('utf_8'))
+    TxtAsc = unidecode(TxtSpe.decode(enc))
     return TxtAsc
 
 if __name__ == "__main__":
+    # sys.argv[0]=Name of the script, sys.argv[1]= 1st argument
     if len(sys.argv) >= 2:
-        TxtAsc = ReplSpeChar(sys.argv[1]) # sys.argv[0]=Name of the script, sys.argv[1]= 1st argument
+        if len(sys.argv) == 2:
+            TxtAsc = ReplSpeChar(sys.argv[1])
+        elif len(sys.argv) == 3:
+            TxtAsc = ReplSpeChar(sys.argv[1], sys.argv[2])
         print(TxtAsc)
     else:
-        print("No Argument. Please pass a filename.")
+        print("No Argument passed.\nPlease pass a filename.")

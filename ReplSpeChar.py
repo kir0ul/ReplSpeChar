@@ -11,7 +11,6 @@ pip install unidecode
 """
 
 import sys
-from unidecode import unidecode
 
 def ReplSpeChar(File):
     """
@@ -19,6 +18,7 @@ def ReplSpeChar(File):
     Return in the standard output the text with the special characters
     replaced by ASCII ones.
     """
+    from unidecode import unidecode
     fobj = open(File, 'r')
     TxtSpe = fobj.read()
     fobj.close()

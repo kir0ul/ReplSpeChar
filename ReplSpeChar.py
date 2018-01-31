@@ -12,7 +12,7 @@ pip install unidecode
 
 import sys
 
-def ReplSpeChar(File, enc='utf_8'):
+def ReplSpeChar(File, enc='utf-8'):
     """
     Open the file passed in argument.
     Return in the standard output the text with the special characters
@@ -21,7 +21,7 @@ def ReplSpeChar(File, enc='utf_8'):
     The argument "enc" is the codec used to encode the file.
     Default encoding is 'utf_8'.
     Standard codecs can be found at the following address:
-    https://docs.python.org/2/library/codecs.html#standard-encodings
+    https://docs.python.org/3.6/library/codecs.html#standard-encodings
     """
     try:
         from unidecode import unidecode
@@ -30,14 +30,13 @@ def ReplSpeChar(File, enc='utf_8'):
         print("You can install it with:\npip install unidecode")
         sys.exit()
 
-    fobj = open(File, 'r')
-    TxtSpe = fobj.read()
-    fobj.close()
+    with open(File, encoding=enc, mode='r') as fobj:
+        TxtSpe = fobj.read()
 
     # The unidecode package needs a unicode string.
     # First decode the texte encoded with the "enc" codec.
     # Then apply the unidecode function that converts it to ASCII with good matches for special characters.
-    TxtAsc = unidecode(TxtSpe.decode(enc))
+    TxtAsc = unidecode(TxtSpe)
     return TxtAsc
 
 if __name__ == "__main__":

@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Replace special characters from a text file with ASCII characters.
+Replace special characters from text file(s) with ASCII characters.
 
-Typical use in a terminal:
-python ReplCarSpeParAscii.py SourceFile > FileWithoutSpecialCharacters
+Typical use in a terminal for one file:
+python ReplSpeChar.py SourceFile [encoding] > FileWithoutSpecialCharacters
+
+Typical use in a terminal for a whole folder:
+python ReplSpeChar.py FolderName [encoding]
 
 Need the unidecode package that can be installed with:
 pip install unidecode
@@ -19,7 +22,7 @@ def ReplSpeChar(File, enc='utf-8'):
     replaced by ASCII ones.
 
     The argument "enc" is the codec used to encode the file.
-    Default encoding is 'utf_8'.
+    Default encoding is 'utf-8'.
     Standard codecs can be found at the following address:
     https://docs.python.org/3.6/library/codecs.html#standard-encodings
     """
@@ -39,13 +42,46 @@ def ReplSpeChar(File, enc='utf-8'):
     TxtAsc = unidecode(TxtSpe)
     return TxtAsc
 
+
+
+def WalkReplSpeChar(path, enc='utf-8'):
+    """
+    Replace special characters from text files inside the "path" directory
+    """
+    import os
+    import mimetypes as mt
+
+    # import pdb; pdb.set_trace()
+    
+    # Single file case: print the content of the file without the special characters
+    if os.path.isfile(path):
+        TxtAsc = ReplSpeChar(path, enc)
+        print(TxtAsc)
+        return TxtAsc
+
+    # Directory case: replaces each text file by its new version without the special characters
+    elif os.path.isdir(path):
+        for root, dirs, files in os.walk(path):
+            for f in files:
+                fPath = os.path.join(root, f)
+                print("Processing file: " + fPath)
+                if mt.guess_type(fPath)[0] == 'text/plain':
+                    TxtAsc = ReplSpeChar(fPath, enc)
+                    with open(fPath, encoding=enc, mode="w") as fobj:
+                        fobj.write(TxtAsc)
+            
+    else:
+        print("The passed argument is neither an existing file, nor an existing folder.")
+        sys.exit()
+        
+    
+
 if __name__ == "__main__":
     # sys.argv[0]=Name of the script, sys.argv[1]= 1st argument
     if len(sys.argv) >= 2:
         if len(sys.argv) == 2:
-            TxtAsc = ReplSpeChar(sys.argv[1])
+            TxtAsc = WalkReplSpeChar(sys.argv[1], sys.getdefaultencoding())
         elif len(sys.argv) == 3:
-            TxtAsc = ReplSpeChar(sys.argv[1], sys.argv[2])
-        print(TxtAsc)
+            TxtAsc = WalkReplSpeChar(sys.argv[1], sys.argv[2])
     else:
         print("No Argument passed.\nPlease pass a filename.")

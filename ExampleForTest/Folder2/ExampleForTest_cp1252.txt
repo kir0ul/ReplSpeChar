@@ -1,0 +1,98 @@
+//===============================================================================
+//Macro DEP_explore_folder
+//===============================================================================
+//création: 04/03/03
+//===============================================================================
+
+//==========================================================================================================
+// nb_folders : Nombre de séries de planches. EXEMPLE : 2
+// liste_folders_path : Dataset des chemins des séries. EXEMPLE : {"C:\MONOCYLINDRE","C:\POLYCYLINDRE"}
+// liste_folders_nom : Dataset des nom des séries de planche. EXEMPLE : {"MONOCYLINDRE","POLYCYLINDRE"}
+
+// liste_nb_fichiers : Dataset du nombre de planches par série. EXEMPLE : {"2","3"}
+
+// tableau_fichiers_path : Array(1,folders) des chemins des planches.
+//      EXEMPLE : tableau_fichiers_path(1,1)={"C:\MONOCYLINDRE\perfo.cly","C:\MONOCYLINDRE\depol.cly"  
+//                tableau_fichiers_path(1,2)={"C:\POLYCYLINDRE\perfo.cly","C:\POLYCYLINDRE\depol pauvre.cly" 
+//                                                                       ,"C:\POLYCYLINDRE\depol riche.cly"}
+
+// tableau_fichiers_nom_total : Array(1,nb_folders) des noms des planches avec l'extension.
+//      EXEMPLE : tableau_fichiers_nom_total(1,1)={"perfo.cly","depol.cly"}  
+//                tableau_fichiers_nom_total(1,2)={"perfo.cly","depol pauvre.cly","depol riche.cly"}
+
+// tableau_fichiers_nom_reduit : Array(1,nb_folders) des noms des planches sans l'extension.
+//      EXEMPLE : tableau_fichiers_nom_reduit(1,1)={"perfo","depol"}  
+//                tableau_fichiers_nom_reduit(1,2)={"perfo","depol pauvre","depol riche"}
+//==========================================================================================================
+
+arg(_chemin,filtre)
+
+concerto=GetApplication()
+
+liste_folders_path=concerto.GetFolderList(_chemin,1)
+liste_folders_nom=concerto.GetFolderList(_chemin,0)
+nb_folders=liste_folders_nom.count
+
+if Edes_IsEmpty(nb_folders)=0 then
+//si l'arborescence est vide
+
+    nombre_folders				=""
+	liste_folders_path			=""
+    liste_folders_nom			=""
+    liste_nb_fichiers			=""
+    tableau_fichiers_path		=""
+    tableau_fichiers_nom_total	=""
+    tableau_fichiers_nom_reduit	=""
+
+else
+//si l'arborescence n'est pas vide
+
+    //on crée les différents tableaux de fichiers comme défini en entete
+    tableau_fichiers_path=NewDSArray(1,nb_folders)
+    tableau_fichiers_nom_total=NewDSArray(1,nb_folders)
+    tableau_fichiers_nom_reduit=NewDSArray(1,nb_folders)
+    liste_nb_fichiers=New(nb_folders,"")
+
+    for indice_folder=1 to nb_folders
+
+        liste_fichiers_path=concerto.GetFileList(liste_folders_path.y[indice_folder]+"\*."+filtre,1)
+        liste_nb_fichiers.y[indice_folder]=liste_fichiers_path.count
+
+		if Edes_IsEmpty(liste_nb_fichiers.y[indice_folder])=0 then
+        //si le folder est vide
+
+            liste_fichiers_path=""
+			liste_fichiers_nom_total=""
+			liste_fichiers_nom_reduit=""
+
+		else
+		// si le folder n'est pas vide
+
+            liste_fichiers_nom_total=concerto.GetFileList(liste_folders_path.y[indice_folder]+"\*."+filtre,0)
+            liste_fichiers_nom_reduit=liste_fichiers_nom_total
+            for indice_fichier=1 to liste_nb_fichiers.y[indice_folder]
+                liste_fichiers_nom_reduit.y[indice_fichier]=Edes_StrReplace(liste_fichiers_nom_reduit.y[indice_fichier],".cly","")
+            next indice_fichier
+
+        endif
+        tableau_fichiers_path.PutCell(liste_fichiers_path,1,indice_folder)
+        tableau_fichiers_nom_total.PutCell(liste_fichiers_nom_total,1,indice_folder) 
+        tableau_fichiers_nom_reduit.PutCell(liste_fichiers_nom_reduit,1,indice_folder) 
+
+    next indice_folder
+
+    nombre_folders=cstr(nb_folders)
+
+endif
+
+// pour les folders
+setuservar("nombre_folders",nombre_folders)
+concerto.addglobaldataset("liste_folders_path",liste_folders_path)
+concerto.addglobaldataset("liste_folders_nom",liste_folders_nom)
+
+// pour les fichiers
+concerto.addglobaldataset("liste_nb_fichiers",liste_nb_fichiers)
+concerto.addglobaldataset("tableau_fichiers_path",tableau_fichiers_path)
+concerto.addglobaldataset("tableau_fichiers_nom_total",tableau_fichiers_nom_total)
+concerto.addglobaldataset("tableau_fichiers_nom_reduit",tableau_fichiers_nom_reduit)
+
